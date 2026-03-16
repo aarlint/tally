@@ -13,14 +13,9 @@ const recentFinished = computed(() => games.value?.filter(g => g.status === 'fin
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="font-display text-2xl font-bold tracking-tight">Games</h1>
-        <p style="color: var(--text-muted)" class="text-sm mt-0.5">Track scores for any game</p>
-      </div>
-      <RouterLink to="/new" class="btn-primary text-sm !py-2.5 !px-5">
-        + New Game
-      </RouterLink>
+    <div>
+      <h1 class="font-display text-2xl font-bold tracking-tight">Games</h1>
+      <p style="color: var(--text-muted)" class="text-sm mt-0.5">Track scores for any game</p>
     </div>
 
     <!-- Loading -->
@@ -72,7 +67,6 @@ const recentFinished = computed(() => games.value?.filter(g => g.status === 'fin
       <div v-if="recentFinished.length" class="space-y-3">
         <div class="flex items-center justify-between">
           <h2 class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted)">Recent</h2>
-          <RouterLink to="/history" class="btn-ghost text-xs">View All →</RouterLink>
         </div>
         <RouterLink
           v-for="game in recentFinished"
