@@ -45,7 +45,6 @@ sqlite.exec(`
   CREATE INDEX IF NOT EXISTS idx_rounds_game ON rounds(game_id);
   CREATE INDEX IF NOT EXISTS idx_scores_round ON scores(round_id);
   CREATE INDEX IF NOT EXISTS idx_scores_player ON scores(player_id);
-  CREATE UNIQUE INDEX IF NOT EXISTS idx_games_share_code ON games(share_code);
 `)
 
 // Migration: add new columns to existing databases
