@@ -180,6 +180,81 @@ api.post('/games/:id/rounds', async (c) => {
   return c.json(round, 201)
 })
 
+// Update round scores (edit existing scores)
+api.patch('/games/:id/rounds/:roundId', async (c) => {
+  const gameId = parseInt(c.req.param('id'))
+  const roundId = parseInt(c.req.param('roundId'))
+  const body = await c.req.json<{ scores: { player_id: number; points: number }[] }>()
+
+  const round = db.select().from(rounds).where(eq(rounds.id, roundId)).get()
+  if (!round || round.game_id !== gameId) {
+    return c.json({ error: 'Round not found' }, 404)
+  }
+
+  if (!body.scores?.length) return c.json({ error: 'Scores required' }, 400)
+
+  for (const s of body.scores) {
+    db.update(scores)
+      .set({ points: s.points })
+      .where(sql`${scores.round_id} = ${roundId} AND ${scores.player_id} = ${s.player_id}`)
+      .run()
+  }
+
+  return c.json({ ok: true })
+})
+
+// Add player to existing game
+api.post('/games/:id/players', async (c) => {
+  const gameId = parseInt(c.req.param('id'))
+  const body = await c.req.json<{ name: string; backfill: 'average' | 'zero' }>()
+
+  if (!body.name?.trim()) return c.json({ error: 'Player name required' }, 400)
+
+  const game = db.select().from(games).where(eq(games.id, gameId)).get()
+  if (!game) return c.json({ error: 'Game not found' }, 404)
+
+  // Get max display_order
+  const maxOrder = db
+    .select({ max: sql<number>`MAX(${players.display_order})` })
+    .from(players)
+    .where(eq(players.game_id, gameId))
+    .get()
+
+  const player = db.insert(players).values({
+    game_id: gameId,
+    name: body.name.trim(),
+    display_order: (maxOrder?.max ?? -1) + 1,
+  }).returning().get()
+
+  // Backfill scores for existing rounds
+  const gameRounds = db.select().from(rounds).where(eq(rounds.game_id, gameId)).all()
+
+  if (gameRounds.length > 0) {
+    const gamePlayers = db
+      .select({ id: players.id })
+      .from(players)
+      .where(eq(players.game_id, gameId))
+      .all()
+    const otherPlayerIds = gamePlayers.filter(p => p.id !== player.id).map(p => p.id)
+
+    for (const round of gameRounds) {
+      let points = 0
+      if (body.backfill === 'average' && otherPlayerIds.length > 0) {
+        const roundScores = db
+          .select({ points: scores.points })
+          .from(scores)
+          .where(sql`${scores.round_id} = ${round.id} AND ${scores.player_id} IN (${sql.join(otherPlayerIds.map(id => sql`${id}`), sql`, `)})`)
+          .all()
+        const sum = roundScores.reduce((acc, s) => acc + s.points, 0)
+        points = Math.round(sum / roundScores.length)
+      }
+      db.insert(scores).values({ round_id: round.id, player_id: player.id, points }).run()
+    }
+  }
+
+  return c.json(player, 201)
+})
+
 // Delete last round (undo)
 api.delete('/games/:id/rounds/:roundId', async (c) => {
   const gameId = parseInt(c.req.param('id'))

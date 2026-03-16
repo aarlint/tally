@@ -10,11 +10,19 @@ export interface GameMode {
 export const gameModes: GameMode[] = [
   {
     key: 'generic',
-    label: 'Generic',
-    icon: 'target',
+    label: 'Generic (High)',
+    icon: 'arrow-up-circle',
     scoreLabel: 'Points',
     sortDirection: 'high',
     description: 'General-purpose score tracker. Highest score wins.',
+  },
+  {
+    key: 'generic-low',
+    label: 'Generic (Low)',
+    icon: 'arrow-down-circle',
+    scoreLabel: 'Points',
+    sortDirection: 'low',
+    description: 'General-purpose score tracker. Lowest score wins.',
   },
   {
     key: 'rummy',

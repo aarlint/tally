@@ -5,6 +5,8 @@ import { useGame, useUpdateGame, useDeleteGame, useDeleteRound } from '../compos
 import { getMode } from '../lib/modes'
 import ScoreGrid from '../components/ScoreGrid.vue'
 import AddRoundModal from '../components/AddRoundModal.vue'
+import EditScoreModal from '../components/EditScoreModal.vue'
+import AddPlayerModal from '../components/AddPlayerModal.vue'
 import ModeIcon from '../components/ModeIcon.vue'
 
 const route = useRoute()
@@ -17,6 +19,8 @@ const deleteRound = useDeleteRound()
 
 const showAddRound = ref(false)
 const showConfirmDelete = ref(false)
+const showAddPlayer = ref(false)
+const editTarget = ref<{ roundId: number; roundNumber: number; playerId: number; playerName: string; currentPoints: number } | null>(null)
 
 const mode = computed(() => game.value ? getMode(game.value.mode) : null)
 
@@ -86,13 +90,16 @@ async function undoLastRound() {
 
     <!-- Score Grid -->
     <div class="card-static overflow-hidden">
-      <ScoreGrid :game="game" :mode="mode!" />
+      <ScoreGrid :game="game" :mode="mode!" :editable="game.status === 'active'" @editScore="editTarget = $event" />
     </div>
 
     <!-- Actions -->
     <div v-if="game.status === 'active'" class="flex gap-2">
       <button @click="showAddRound = true" class="btn-primary flex-1">
         + add round
+      </button>
+      <button @click="showAddPlayer = true" class="btn-secondary !px-4" title="Add player">
+        + player
       </button>
       <button
         v-if="game.rounds.length > 0"
@@ -141,6 +148,25 @@ async function undoLastRound() {
       :game="game"
       :mode="mode!"
       @close="showAddRound = false"
+    />
+
+    <!-- Edit Score Modal -->
+    <EditScoreModal
+      v-if="editTarget"
+      :game-id="game.id"
+      :round-id="editTarget.roundId"
+      :round-number="editTarget.roundNumber"
+      :player-id="editTarget.playerId"
+      :player-name="editTarget.playerName"
+      :current-points="editTarget.currentPoints"
+      @close="editTarget = null"
+    />
+
+    <!-- Add Player Modal -->
+    <AddPlayerModal
+      v-if="showAddPlayer"
+      :game="game"
+      @close="showAddPlayer = false"
     />
   </div>
 </template>

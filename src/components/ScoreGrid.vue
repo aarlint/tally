@@ -6,6 +6,11 @@ import type { GameMode } from '../lib/modes'
 const props = defineProps<{
   game: GameDetail
   mode: GameMode
+  editable?: boolean
+}>()
+
+const emit = defineEmits<{
+  editScore: [payload: { roundId: number; roundNumber: number; playerId: number; playerName: string; currentPoints: number }]
 }>()
 
 const leader = computed(() => {
@@ -39,7 +44,18 @@ const leader = computed(() => {
       <tbody>
         <tr v-for="round in game.rounds" :key="round.id">
           <td class="text-left pl-4 !text-xs !font-normal" style="color: var(--text-dim)">{{ round.round_number }}</td>
-          <td v-for="score in round.scores" :key="score.player_id">
+          <td
+            v-for="score in round.scores"
+            :key="score.player_id"
+            :class="{ 'cursor-pointer hover:bg-[var(--border)]': editable }"
+            @click="editable && emit('editScore', {
+              roundId: round.id,
+              roundNumber: round.round_number,
+              playerId: score.player_id,
+              playerName: game.players.find(p => p.id === score.player_id)?.name || '',
+              currentPoints: score.points,
+            })"
+          >
             <span :style="{
               color: score.points > 0 ? 'var(--green)' : score.points < 0 ? 'var(--red)' : 'var(--text-dim)'
             }">

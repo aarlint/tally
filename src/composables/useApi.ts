@@ -101,3 +101,21 @@ export function useDeleteRound() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['game'] }),
   })
 }
+
+export function useUpdateRound() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ gameId, roundId, scores }: { gameId: number; roundId: number; scores: { player_id: number; points: number }[] }) =>
+      fetchJson(`/api/games/${gameId}/rounds/${roundId}`, { method: 'PATCH', body: JSON.stringify({ scores }) }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['game'] }),
+  })
+}
+
+export function useAddPlayer() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ gameId, name, backfill }: { gameId: number; name: string; backfill: 'average' | 'zero' }) =>
+      fetchJson(`/api/games/${gameId}/players`, { method: 'POST', body: JSON.stringify({ name, backfill }) }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['game'] }),
+  })
+}

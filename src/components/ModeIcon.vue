@@ -16,6 +16,8 @@ import {
   HelpCircle,
   Hash,
   Trophy,
+  ArrowUpCircle,
+  ArrowDownCircle,
 } from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -38,6 +40,8 @@ const iconMap: Record<string, Component> = {
   'circle-dollar-sign': CircleDollarSign,
   hash: Hash,
   trophy: Trophy,
+  'arrow-up-circle': ArrowUpCircle,
+  'arrow-down-circle': ArrowDownCircle,
 }
 
 const iconComponent = computed(() => iconMap[props.name] || HelpCircle)
