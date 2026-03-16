@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useGames } from '../composables/useApi'
 import { getMode } from '../lib/modes'
 import { RouterLink } from 'vue-router'
+import ModeIcon from '../components/ModeIcon.vue'
 
 const { data: games, isLoading } = useGames()
 
@@ -22,7 +23,9 @@ const recentFinished = computed(() => games.value?.filter(g => g.status === 'fin
 
     <!-- Empty State -->
     <div v-else-if="!games?.length" class="card-static text-center py-16 px-6">
-      <div class="text-4xl mb-4" style="filter: drop-shadow(0 0 8px rgba(51, 255, 51, 0.3))">📊</div>
+      <div class="mb-4" style="color: var(--green); filter: drop-shadow(0 0 8px rgba(51, 255, 51, 0.3))">
+        <ModeIcon name="hash" :size="40" />
+      </div>
       <p class="text-sm mb-1" style="color: var(--text-bright)">no games yet</p>
       <p class="text-xs mb-6" style="color: var(--text-dim)">start tracking scores for card games, board games, and more</p>
       <RouterLink to="/new" class="btn-primary inline-block">
@@ -42,7 +45,7 @@ const recentFinished = computed(() => games.value?.filter(g => g.status === 'fin
         >
           <div class="flex items-start justify-between">
             <div class="flex items-center gap-3">
-              <span class="text-xl" style="filter: drop-shadow(0 0 6px rgba(51, 255, 51, 0.3))">{{ getMode(game.mode).icon }}</span>
+              <span style="color: var(--green); filter: drop-shadow(0 0 6px rgba(51, 255, 51, 0.3))"><ModeIcon :name="getMode(game.mode).icon" :size="22" /></span>
               <div>
                 <div class="text-sm font-medium" style="color: var(--text-bright)">{{ game.name }}</div>
                 <div class="text-xs mt-0.5" style="color: var(--text-dim)">
@@ -66,7 +69,7 @@ const recentFinished = computed(() => games.value?.filter(g => g.status === 'fin
         >
           <div class="flex items-start justify-between">
             <div class="flex items-center gap-3">
-              <span class="text-xl">{{ getMode(game.mode).icon }}</span>
+              <span style="color: var(--text-dim)"><ModeIcon :name="getMode(game.mode).icon" :size="22" /></span>
               <div>
                 <div class="text-sm" style="color: var(--text)">{{ game.name }}</div>
                 <div class="text-xs mt-0.5" style="color: var(--text-dim)">

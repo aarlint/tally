@@ -5,6 +5,7 @@ import { useGame, useUpdateGame, useDeleteGame, useDeleteRound } from '../compos
 import { getMode } from '../lib/modes'
 import ScoreGrid from '../components/ScoreGrid.vue'
 import AddRoundModal from '../components/AddRoundModal.vue'
+import ModeIcon from '../components/ModeIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -66,7 +67,7 @@ async function undoLastRound() {
     <div class="card-static p-4">
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-3">
-          <span class="text-2xl" style="filter: drop-shadow(0 0 6px rgba(51, 255, 51, 0.3))">{{ mode?.icon }}</span>
+          <span style="color: var(--green); filter: drop-shadow(0 0 6px rgba(51, 255, 51, 0.3))"><ModeIcon v-if="mode" :name="mode.icon" :size="28" /></span>
           <div>
             <h1 class="text-base font-bold" style="color: var(--text-bright)">{{ game.name }}</h1>
             <div class="flex items-center gap-2 mt-0.5">

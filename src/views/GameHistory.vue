@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useGames } from '../composables/useApi'
 import { getMode } from '../lib/modes'
+import ModeIcon from '../components/ModeIcon.vue'
 
 const { data: games, isLoading } = useGames()
 
@@ -19,7 +20,9 @@ const finishedGames = computed(() => games.value?.filter(g => g.status === 'fini
     </div>
 
     <div v-else-if="!finishedGames.length" class="card-static text-center py-16">
-      <div class="text-3xl mb-3">🏆</div>
+      <div class="mb-3" style="color: var(--green); filter: drop-shadow(0 0 8px rgba(51, 255, 51, 0.3))">
+        <ModeIcon name="trophy" :size="32" />
+      </div>
       <p class="text-xs" style="color: var(--text-dim)">no finished games yet</p>
     </div>
 
@@ -33,7 +36,7 @@ const finishedGames = computed(() => games.value?.filter(g => g.status === 'fini
       >
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-3">
-            <span class="text-xl">{{ getMode(game.mode).icon }}</span>
+            <span style="color: var(--green)"><ModeIcon :name="getMode(game.mode).icon" :size="22" /></span>
             <div>
               <div class="text-sm" style="color: var(--text)">{{ game.name }}</div>
               <div class="text-xs mt-0.5" style="color: var(--text-dim)">

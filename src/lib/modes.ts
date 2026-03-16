@@ -11,7 +11,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'generic',
     label: 'Generic',
-    icon: '🎯',
+    icon: 'target',
     scoreLabel: 'Points',
     sortDirection: 'high',
     description: 'General-purpose score tracker. Highest score wins.',
@@ -19,7 +19,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'rummy',
     label: 'Rummy',
-    icon: '🃏',
+    icon: 'layers',
     scoreLabel: 'Points',
     sortDirection: 'low',
     description: 'Classic card game. Lowest score wins. Points from cards left in hand.',
@@ -27,7 +27,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'spades',
     label: 'Spades',
-    icon: '♠️',
+    icon: 'spade',
     scoreLabel: 'Points',
     sortDirection: 'high',
     description: 'Trick-taking card game. Highest score wins. Bid and take tricks.',
@@ -35,7 +35,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'hearts',
     label: 'Hearts',
-    icon: '♥️',
+    icon: 'heart',
     scoreLabel: 'Points',
     sortDirection: 'low',
     description: 'Trick-avoidance card game. Lowest score wins. Avoid hearts and queen of spades.',
@@ -43,7 +43,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'cribbage',
     label: 'Cribbage',
-    icon: '🎴',
+    icon: 'gauge',
     scoreLabel: 'Pegs',
     sortDirection: 'high',
     description: 'Classic pegging game. First to 121 pegs wins.',
@@ -51,7 +51,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'euchre',
     label: 'Euchre',
-    icon: '🂡',
+    icon: 'crown',
     scoreLabel: 'Points',
     sortDirection: 'high',
     description: 'Trick-taking game. First to 10 points wins.',
@@ -59,7 +59,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'pinochle',
     label: 'Pinochle',
-    icon: '🂢',
+    icon: 'club',
     scoreLabel: 'Points',
     sortDirection: 'high',
     description: 'Trick-taking and melding game. Highest score wins.',
@@ -67,7 +67,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'phase10',
     label: 'Phase 10',
-    icon: '🔟',
+    icon: 'list-ordered',
     scoreLabel: 'Points',
     sortDirection: 'low',
     description: 'Rummy-type game. Lowest score wins. Complete all 10 phases.',
@@ -75,7 +75,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'uno',
     label: 'UNO',
-    icon: '🟥',
+    icon: 'square-stack',
     scoreLabel: 'Points',
     sortDirection: 'low',
     description: 'Card shedding game. Lowest score wins. First to empty hand scores round.',
@@ -83,7 +83,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'scrabble',
     label: 'Scrabble',
-    icon: '🔤',
+    icon: 'a-large-small',
     scoreLabel: 'Points',
     sortDirection: 'high',
     description: 'Word game. Highest score wins. Place tiles to form words.',
@@ -91,7 +91,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'yahtzee',
     label: 'Yahtzee',
-    icon: '🎲',
+    icon: 'dice-5',
     scoreLabel: 'Points',
     sortDirection: 'high',
     description: 'Dice game. Highest score wins. Roll combinations for points.',
@@ -99,7 +99,7 @@ export const gameModes: GameMode[] = [
   {
     key: 'poker',
     label: 'Poker',
-    icon: '💰',
+    icon: 'circle-dollar-sign',
     scoreLabel: 'Chips',
     sortDirection: 'high',
     description: 'Card game. Most chips wins. Bet and bluff your way to victory.',

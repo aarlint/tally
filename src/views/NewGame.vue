@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCreateGame } from '../composables/useApi'
 import { gameModes } from '../lib/modes'
+import ModeIcon from '../components/ModeIcon.vue'
 
 const router = useRouter()
 const createGame = useCreateGame()
@@ -64,7 +65,7 @@ async function submit() {
           @click="mode = m.key"
           :class="['mode-btn', mode === m.key ? 'active' : '']"
         >
-          <span class="text-lg">{{ m.icon }}</span>
+          <span :style="{ color: mode === m.key ? 'var(--green)' : 'var(--text-dim)' }"><ModeIcon :name="m.icon" :size="20" /></span>
           <span class="text-[9px] uppercase tracking-wider" :style="{ color: mode === m.key ? 'var(--green)' : 'var(--text-dim)' }">{{ m.label }}</span>
         </button>
       </div>
