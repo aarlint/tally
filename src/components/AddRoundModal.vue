@@ -29,19 +29,19 @@ async function submit() {
 
 <template>
   <div class="overlay flex items-end sm:items-center justify-center" @click.self="emit('close')">
-    <div class="w-full max-w-lg card-static rounded-t-2xl sm:rounded-2xl p-6 space-y-5" style="background: var(--bg-surface); border-color: var(--border-hover)">
+    <div class="w-full max-w-lg card-static rounded-t-md sm:rounded-md p-5 space-y-4" style="background: var(--surface); border-color: var(--border)">
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="font-display text-lg font-bold tracking-tight">
-            Round {{ (game.rounds.length || 0) + 1 }}
+          <h2 class="text-sm font-bold" style="color: var(--text-bright)">
+            round {{ (game.rounds.length || 0) + 1 }}
           </h2>
-          <p class="text-xs mt-0.5" style="color: var(--text-muted)">
-            Enter {{ mode.scoreLabel.toLowerCase() }} for each player
+          <p class="text-[10px] mt-0.5" style="color: var(--text-dim)">
+            enter {{ mode.scoreLabel.toLowerCase() }} for each player
           </p>
         </div>
-        <button @click="emit('close')" class="btn-ghost !p-2" style="color: var(--text-muted)">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button @click="emit('close')" class="btn-ghost !p-2" style="color: var(--text-dim)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -50,10 +50,8 @@ async function submit() {
       <!-- Score inputs -->
       <div class="space-y-3">
         <div v-for="player in game.players" :key="player.id" class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--accent-glow); color: var(--accent)">
-            {{ player.name.charAt(0).toUpperCase() }}
-          </div>
-          <label class="text-sm font-medium flex-1 truncate" style="color: var(--text-secondary)">{{ player.name }}</label>
+          <span class="text-xs w-6 text-center" style="color: var(--green-dim)">{{ player.name.charAt(0).toUpperCase() }}</span>
+          <label class="text-xs flex-1 truncate" style="color: var(--text-dim)">{{ player.name }}</label>
           <input
             v-model.number="scoreInputs[player.id]"
             type="number"
@@ -67,14 +65,14 @@ async function submit() {
       <!-- Info -->
       <div class="flex items-center justify-center gap-2 py-1">
         <span class="badge badge-mode">{{ mode.scoreLabel }}</span>
-        <span class="text-[10px]" style="color: var(--text-muted)">
-          {{ mode.sortDirection === 'high' ? 'Highest wins' : 'Lowest wins' }}
+        <span class="text-[9px] uppercase tracking-wider" style="color: var(--text-dim)">
+          {{ mode.sortDirection === 'high' ? 'highest wins' : 'lowest wins' }}
         </span>
       </div>
 
       <!-- Submit -->
-      <button @click="submit" :disabled="addRound.isPending.value" class="btn-primary w-full text-base">
-        {{ addRound.isPending.value ? 'Saving...' : 'Save Round' }}
+      <button @click="submit" :disabled="addRound.isPending.value" class="btn-primary w-full">
+        {{ addRound.isPending.value ? 'saving...' : 'save round →' }}
       </button>
     </div>
   </div>

@@ -11,35 +11,29 @@ const recentFinished = computed(() => games.value?.filter(g => g.status === 'fin
 </script>
 
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div>
-      <h1 class="font-display text-2xl font-bold tracking-tight">Games</h1>
-      <p style="color: var(--text-muted)" class="text-sm mt-0.5">Track scores for any game</p>
-    </div>
-
+  <div class="space-y-5">
     <!-- Loading -->
     <div v-if="isLoading" class="space-y-3">
-      <div v-for="i in 3" :key="i" class="card-static p-4 animate-pulse">
-        <div class="h-5 rounded" style="background: var(--border); width: 60%"></div>
+      <div v-for="i in 3" :key="i" class="card-static p-4">
+        <div class="h-4 rounded" style="background: var(--border); width: 60%"></div>
         <div class="h-3 rounded mt-2" style="background: var(--border); width: 40%"></div>
       </div>
     </div>
 
     <!-- Empty State -->
     <div v-else-if="!games?.length" class="card-static text-center py-16 px-6">
-      <div class="text-5xl mb-4">🎯</div>
-      <h2 class="font-display text-xl font-bold mb-1">No games yet</h2>
-      <p style="color: var(--text-muted)" class="text-sm mb-6">Start tracking scores for your favorite card games, board games, and more.</p>
-      <RouterLink to="/new" class="btn-primary inline-block text-sm">
-        Start your first game
+      <div class="text-4xl mb-4" style="filter: drop-shadow(0 0 8px rgba(51, 255, 51, 0.3))">📊</div>
+      <p class="text-sm mb-1" style="color: var(--text-bright)">no games yet</p>
+      <p class="text-xs mb-6" style="color: var(--text-dim)">start tracking scores for card games, board games, and more</p>
+      <RouterLink to="/new" class="btn-primary inline-block">
+        new game &rarr;
       </RouterLink>
     </div>
 
     <template v-else>
       <!-- Active Games -->
       <div v-if="activeGames.length" class="space-y-3">
-        <h2 class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted)">Active</h2>
+        <p class="section-label">active</p>
         <RouterLink
           v-for="game in activeGames"
           :key="game.id"
@@ -48,45 +42,39 @@ const recentFinished = computed(() => games.value?.filter(g => g.status === 'fin
         >
           <div class="flex items-start justify-between">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background: var(--accent-glow); border: 1px solid rgba(99,102,241,0.2)">
-                {{ getMode(game.mode).icon }}
-              </div>
+              <span class="text-xl" style="filter: drop-shadow(0 0 6px rgba(51, 255, 51, 0.3))">{{ getMode(game.mode).icon }}</span>
               <div>
-                <div class="font-semibold">{{ game.name }}</div>
-                <div class="text-xs mt-0.5" style="color: var(--text-secondary)">
+                <div class="text-sm font-medium" style="color: var(--text-bright)">{{ game.name }}</div>
+                <div class="text-xs mt-0.5" style="color: var(--text-dim)">
                   {{ game.players.map(p => p.name).join(' · ') }}
                 </div>
               </div>
             </div>
-            <span class="badge badge-active">Live</span>
+            <span class="badge badge-active">live</span>
           </div>
         </RouterLink>
       </div>
 
       <!-- Recent Finished -->
       <div v-if="recentFinished.length" class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted)">Recent</h2>
-        </div>
+        <p class="section-label">recent</p>
         <RouterLink
           v-for="game in recentFinished"
           :key="game.id"
           :to="`/game/${game.id}`"
-          class="card block p-4 opacity-70 hover:opacity-100"
+          class="card block p-4 opacity-60 hover:opacity-100"
         >
           <div class="flex items-start justify-between">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background: rgba(139,138,149,0.08); border: 1px solid var(--border)">
-                {{ getMode(game.mode).icon }}
-              </div>
+              <span class="text-xl">{{ getMode(game.mode).icon }}</span>
               <div>
-                <div class="font-semibold text-sm">{{ game.name }}</div>
-                <div class="text-xs mt-0.5" style="color: var(--text-muted)">
+                <div class="text-sm" style="color: var(--text)">{{ game.name }}</div>
+                <div class="text-xs mt-0.5" style="color: var(--text-dim)">
                   {{ game.players.map(p => p.name).join(' · ') }}
                 </div>
               </div>
             </div>
-            <span class="badge badge-finished">Done</span>
+            <span class="badge badge-finished">done</span>
           </div>
         </RouterLink>
       </div>

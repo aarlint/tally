@@ -26,22 +26,22 @@ const leader = computed(() => {
           <th
             v-for="player in game.players"
             :key="player.id"
-            class="min-w-[72px]"
-            :style="{ color: leader === player.id ? 'var(--gold)' : undefined }"
+            class="min-w-[64px]"
+            :style="{ color: leader === player.id ? 'var(--green)' : undefined }"
           >
             <span class="inline-flex items-center gap-1">
               {{ player.name }}
-              <span v-if="leader === player.id" class="leader-glow">👑</span>
+              <span v-if="leader === player.id" class="leader-glow">★</span>
             </span>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="round in game.rounds" :key="round.id">
-          <td class="text-left pl-4 !text-xs !font-normal" style="color: var(--text-muted)">{{ round.round_number }}</td>
+          <td class="text-left pl-4 !text-xs !font-normal" style="color: var(--text-dim)">{{ round.round_number }}</td>
           <td v-for="score in round.scores" :key="score.player_id">
             <span :style="{
-              color: score.points > 0 ? 'var(--text-primary)' : score.points < 0 ? 'var(--red)' : 'var(--text-muted)'
+              color: score.points > 0 ? 'var(--green)' : score.points < 0 ? 'var(--red)' : 'var(--text-dim)'
             }">
               {{ score.points > 0 ? '+' + score.points : score.points }}
             </span>
@@ -50,11 +50,11 @@ const leader = computed(() => {
       </tbody>
       <tfoot v-if="game.rounds.length > 0">
         <tr>
-          <td class="text-left pl-4 !text-xs !font-semibold" style="color: var(--text-muted)">Total</td>
+          <td class="text-left pl-4 !text-xs !font-medium" style="color: var(--text-dim)">total</td>
           <td
             v-for="player in game.players"
             :key="player.id"
-            :style="{ color: leader === player.id ? 'var(--gold)' : 'var(--text-primary)' }"
+            :style="{ color: leader === player.id ? 'var(--green)' : 'var(--text-bright)' }"
           >
             {{ game.totals.find(t => t.player_id === player.id)?.total ?? 0 }}
           </td>
@@ -63,8 +63,7 @@ const leader = computed(() => {
     </table>
 
     <div v-if="!game.rounds.length" class="text-center py-12 px-4">
-      <div class="text-3xl mb-2">🎲</div>
-      <p class="text-sm" style="color: var(--text-muted)">No rounds yet. Add a round to start scoring.</p>
+      <p class="text-xs" style="color: var(--text-dim)">no rounds yet — add a round to start scoring</p>
     </div>
   </div>
 </template>
