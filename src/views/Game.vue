@@ -43,50 +43,61 @@ async function undoLastRound() {
 </script>
 
 <template>
-  <div v-if="isLoading" class="text-center py-12 text-gray-500">Loading...</div>
+  <!-- Loading -->
+  <div v-if="isLoading" class="space-y-4">
+    <div class="card-static p-4 animate-pulse">
+      <div class="h-6 rounded" style="background: var(--border); width: 50%"></div>
+      <div class="h-3 rounded mt-2" style="background: var(--border); width: 30%"></div>
+    </div>
+    <div class="card-static p-6 animate-pulse">
+      <div class="h-32 rounded" style="background: var(--border)"></div>
+    </div>
+  </div>
 
-  <div v-else-if="!game" class="text-center py-12 text-gray-500">Game not found</div>
+  <!-- Not found -->
+  <div v-else-if="!game" class="card-static text-center py-16">
+    <p style="color: var(--text-muted)">Game not found</p>
+  </div>
 
   <div v-else class="space-y-4">
-    <!-- Header -->
-    <div class="flex items-start justify-between">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="text-xl">{{ mode?.icon }}</span>
-          <h1 class="text-xl font-bold">{{ game.name }}</h1>
+    <!-- Header card -->
+    <div class="card-static p-4">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background: var(--accent-glow); border: 1px solid rgba(99,102,241,0.2)">
+            {{ mode?.icon }}
+          </div>
+          <div>
+            <h1 class="font-display text-xl font-bold tracking-tight">{{ game.name }}</h1>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="badge badge-mode">{{ mode?.label }}</span>
+              <span class="text-xs" style="color: var(--text-muted)">
+                {{ mode?.scoreLabel }} · {{ mode?.sortDirection === 'high' ? 'Highest wins' : 'Lowest wins' }}
+              </span>
+            </div>
+          </div>
         </div>
-        <p class="text-xs text-gray-500 mt-0.5">
-          {{ mode?.label }} · {{ mode?.scoreLabel }} · {{ mode?.sortDirection === 'high' ? 'Highest wins' : 'Lowest wins' }}
-        </p>
-      </div>
-      <div class="flex items-center gap-2">
-        <span
-          :class="[
-            'text-xs px-2 py-0.5 rounded-full',
-            game.status === 'active' ? 'bg-green-900/50 text-green-400' : 'bg-gray-800 text-gray-400'
-          ]"
-        >
-          {{ game.status === 'active' ? 'Active' : 'Finished' }}
+        <span :class="['badge', game.status === 'active' ? 'badge-active' : 'badge-finished']">
+          {{ game.status === 'active' ? 'Live' : 'Done' }}
         </span>
       </div>
     </div>
 
     <!-- Score Grid -->
-    <ScoreGrid :game="game" :mode="mode!" />
+    <div class="card-static overflow-hidden">
+      <ScoreGrid :game="game" :mode="mode!" />
+    </div>
 
     <!-- Actions -->
     <div v-if="game.status === 'active'" class="flex gap-2">
-      <button
-        @click="showAddRound = true"
-        class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-medium transition"
-      >
+      <button @click="showAddRound = true" class="btn-primary flex-1 text-base">
         + Add Round
       </button>
       <button
         v-if="game.rounds.length > 0"
         @click="undoLastRound"
         :disabled="deleteRound.isPending.value"
-        class="px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm transition disabled:opacity-50"
+        class="btn-secondary !px-4"
         title="Undo last round"
       >
         ↩
@@ -94,37 +105,34 @@ async function undoLastRound() {
     </div>
 
     <!-- Game controls -->
-    <div class="flex gap-2 pt-2 border-t border-gray-800">
+    <div class="flex gap-2">
       <button
         v-if="game.status === 'active'"
         @click="finishGame"
-        class="flex-1 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm transition"
+        class="btn-secondary flex-1 text-sm"
       >
         Finish Game
       </button>
       <button
         v-else
         @click="reactivateGame"
-        class="flex-1 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm transition"
+        class="btn-secondary flex-1 text-sm"
       >
         Reactivate
       </button>
-      <button
-        @click="showConfirmDelete = true"
-        class="px-4 py-2 text-red-400 hover:bg-red-950/50 rounded-lg text-sm transition"
-      >
+      <button @click="showConfirmDelete = true" class="btn-danger text-sm">
         Delete
       </button>
     </div>
 
     <!-- Delete confirmation -->
-    <div v-if="showConfirmDelete" class="bg-red-950/30 border border-red-900 rounded-lg p-4 space-y-3">
-      <p class="text-sm">Delete this game and all its scores?</p>
+    <div v-if="showConfirmDelete" class="card-static p-4 space-y-3" style="border-color: rgba(229,69,69,0.3); background: rgba(229,69,69,0.06)">
+      <p class="text-sm" style="color: var(--text-secondary)">Delete this game and all its scores? This can't be undone.</p>
       <div class="flex gap-2">
-        <button @click="handleDelete" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-sm transition">
+        <button @click="handleDelete" class="btn-primary !bg-red-600 text-sm">
           Yes, Delete
         </button>
-        <button @click="showConfirmDelete = false" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm transition">
+        <button @click="showConfirmDelete = false" class="btn-secondary text-sm">
           Cancel
         </button>
       </div>

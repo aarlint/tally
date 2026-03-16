@@ -43,81 +43,78 @@ async function submit() {
 
 <template>
   <div class="space-y-6">
-    <h1 class="text-2xl font-bold">New Game</h1>
+    <div>
+      <h1 class="font-display text-2xl font-bold tracking-tight">New Game</h1>
+      <p style="color: var(--text-muted)" class="text-sm mt-0.5">Set up your game and players</p>
+    </div>
 
-    <div v-if="error" class="bg-red-900/30 border border-red-800 rounded-lg px-4 py-2 text-red-400 text-sm">
-      {{ error }}
+    <!-- Error -->
+    <div v-if="error" class="card-static px-4 py-3" style="border-color: rgba(229,69,69,0.3); background: rgba(229,69,69,0.08)">
+      <p class="text-sm" style="color: var(--red)">{{ error }}</p>
     </div>
 
     <!-- Game Name -->
     <div>
-      <label class="block text-sm font-medium text-gray-400 mb-1">Game Name</label>
-      <input
-        v-model="name"
-        type="text"
-        placeholder="Friday Night Cards"
-        class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
-      />
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--text-muted)">Game Name</label>
+      <input v-model="name" type="text" placeholder="Friday Night Cards" class="input" />
     </div>
 
     <!-- Game Mode -->
     <div>
-      <label class="block text-sm font-medium text-gray-400 mb-2">Game Mode</label>
-      <div class="grid grid-cols-3 gap-2">
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--text-muted)">Game Mode</label>
+      <div class="grid grid-cols-4 gap-2">
         <button
           v-for="m in gameModes"
           :key="m.key"
           @click="mode = m.key"
-          :class="[
-            'flex flex-col items-center gap-1 p-3 rounded-lg border text-sm transition',
-            mode === m.key
-              ? 'border-indigo-500 bg-indigo-950/50'
-              : 'border-gray-800 bg-gray-900 hover:border-gray-600'
-          ]"
+          :class="['mode-btn', mode === m.key ? 'active' : '']"
         >
           <span class="text-xl">{{ m.icon }}</span>
-          <span class="text-xs">{{ m.label }}</span>
+          <span class="text-[10px] font-medium" :style="{ color: mode === m.key ? 'var(--text-primary)' : 'var(--text-secondary)' }">{{ m.label }}</span>
         </button>
       </div>
-      <p class="text-xs text-gray-500 mt-2">
-        {{ gameModes.find(m => m.key === mode)?.description }}
-      </p>
+      <div class="card-static mt-3 px-4 py-3">
+        <p class="text-xs" style="color: var(--text-secondary)">
+          <span class="font-semibold" style="color: var(--text-primary)">{{ gameModes.find(m => m.key === mode)?.label }}</span>
+          — {{ gameModes.find(m => m.key === mode)?.description }}
+        </p>
+      </div>
     </div>
 
     <!-- Players -->
     <div>
-      <label class="block text-sm font-medium text-gray-400 mb-2">Players</label>
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--text-muted)">Players</label>
       <div class="space-y-2">
-        <div v-for="(_, i) in playerNames" :key="i" class="flex gap-2">
+        <div v-for="(_, i) in playerNames" :key="i" class="flex gap-2 items-center">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--accent-glow); color: var(--accent)">
+            {{ i + 1 }}
+          </div>
           <input
             v-model="playerNames[i]"
             type="text"
             :placeholder="`Player ${i + 1}`"
-            class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
+            class="input"
             @keydown.enter="i === playerNames.length - 1 ? addPlayer() : undefined"
           />
           <button
             v-if="playerNames.length > 2"
             @click="removePlayer(i)"
-            class="px-3 text-gray-500 hover:text-red-400 transition"
+            class="btn-ghost flex-shrink-0 !p-2"
+            style="color: var(--text-muted)"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
       </div>
-      <button @click="addPlayer" class="mt-2 text-sm text-indigo-400 hover:text-indigo-300 transition">
+      <button @click="addPlayer" class="btn-ghost text-xs mt-2" style="color: var(--accent)">
         + Add Player
       </button>
     </div>
 
     <!-- Submit -->
-    <button
-      @click="submit"
-      :disabled="createGame.isPending.value"
-      class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-lg font-medium transition"
-    >
+    <button @click="submit" :disabled="createGame.isPending.value" class="btn-primary w-full text-base">
       {{ createGame.isPending.value ? 'Creating...' : 'Start Game' }}
     </button>
   </div>
