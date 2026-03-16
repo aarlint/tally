@@ -50,13 +50,12 @@ async function submit() {
       <!-- Score inputs -->
       <div class="space-y-3">
         <div v-for="player in game.players" :key="player.id" class="flex items-center gap-3">
-          <span class="text-xs w-6 text-center" style="color: var(--green-dim)">{{ player.name.charAt(0).toUpperCase() }}</span>
-          <label class="text-xs flex-1 truncate" style="color: var(--text-dim)">{{ player.name }}</label>
+          <label class="text-xs flex-1" style="color: var(--text)">{{ player.name }}</label>
           <input
             v-model.number="scoreInputs[player.id]"
             type="number"
             inputmode="numeric"
-            class="input-score w-24"
+            class="input-score w-16 !text-sm !py-1.5 !px-2"
             @focus="($event.target as HTMLInputElement).select()"
           />
         </div>
