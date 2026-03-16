@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import { Hash, Home, PlusCircle, Clock } from 'lucide-vue-next'
 
 const route = useRoute()
-const showNav = computed(() => !route.path.startsWith('/game/'))
+const showNav = computed(() => !route.path.startsWith('/game/') && !route.path.startsWith('/g/'))
 </script>
 
 <template>

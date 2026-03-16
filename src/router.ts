@@ -7,5 +7,6 @@ export const router = createRouter({
     { path: '/new', component: () => import('./views/NewGame.vue') },
     { path: '/game/:id', component: () => import('./views/Game.vue') },
     { path: '/history', component: () => import('./views/GameHistory.vue') },
+    { path: '/g/:code', component: () => import('./views/JoinGame.vue') },
   ],
 })

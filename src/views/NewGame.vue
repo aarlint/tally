@@ -4,12 +4,14 @@ import { useRouter } from 'vue-router'
 import { useCreateGame } from '../composables/useApi'
 import { gameModes } from '../lib/modes'
 import ModeIcon from '../components/ModeIcon.vue'
+import { Lock, Users, Eye } from 'lucide-vue-next'
 
 const router = useRouter()
 const createGame = useCreateGame()
 
 const name = ref('')
 const mode = ref('generic')
+const accessMode = ref<'solo' | 'collaborative' | 'spectator'>('solo')
 const playerNames = ref(['', ''])
 const error = ref('')
 
@@ -27,13 +29,16 @@ async function submit() {
   error.value = ''
   const trimmedPlayers = playerNames.value.map(p => p.trim()).filter(Boolean)
   if (!name.value.trim()) { error.value = 'game name is required'; return }
-  if (trimmedPlayers.length < 2) { error.value = 'at least 2 players required'; return }
+  if (accessMode.value !== 'collaborative' && trimmedPlayers.length < 2) {
+    error.value = 'at least 2 players required'; return
+  }
 
   try {
     const game = await createGame.mutateAsync({
       name: name.value.trim(),
       mode: mode.value,
       players: trimmedPlayers,
+      access_mode: accessMode.value,
     })
     router.push(`/game/${game.id}`)
   } catch (e: any) {
@@ -77,6 +82,47 @@ async function submit() {
       </div>
     </div>
 
+    <!-- Access Mode -->
+    <div>
+      <label class="section-label block mb-3">sharing</label>
+      <div class="grid grid-cols-3 gap-2">
+        <button
+          @click="accessMode = 'solo'"
+          :class="['mode-btn', accessMode === 'solo' ? 'active' : '']"
+        >
+          <Lock :size="18" :style="{ color: accessMode === 'solo' ? 'var(--green)' : 'var(--text-dim)' }" />
+          <span class="text-[9px] uppercase tracking-wider" :style="{ color: accessMode === 'solo' ? 'var(--green)' : 'var(--text-dim)' }">solo</span>
+        </button>
+        <button
+          @click="accessMode = 'collaborative'"
+          :class="['mode-btn', accessMode === 'collaborative' ? 'active' : '']"
+        >
+          <Users :size="18" :style="{ color: accessMode === 'collaborative' ? 'var(--green)' : 'var(--text-dim)' }" />
+          <span class="text-[9px] uppercase tracking-wider" :style="{ color: accessMode === 'collaborative' ? 'var(--green)' : 'var(--text-dim)' }">collab</span>
+        </button>
+        <button
+          @click="accessMode = 'spectator'"
+          :class="['mode-btn', accessMode === 'spectator' ? 'active' : '']"
+        >
+          <Eye :size="18" :style="{ color: accessMode === 'spectator' ? 'var(--green)' : 'var(--text-dim)' }" />
+          <span class="text-[9px] uppercase tracking-wider" :style="{ color: accessMode === 'spectator' ? 'var(--green)' : 'var(--text-dim)' }">spectate</span>
+        </button>
+      </div>
+      <div class="card-static mt-3 px-4 py-3">
+        <p class="text-xs" style="color: var(--text-dim)">
+          <template v-if="accessMode === 'solo'">
+            <span style="color: var(--amber)">Solo</span> — only you can view and edit scores
+          </template>
+          <template v-else-if="accessMode === 'collaborative'">
+            <span style="color: var(--amber)">Collaborative</span> — anyone with the link can add scores
+          </template>
+          <template v-else>
+            <span style="color: var(--amber)">Spectator</span> — others can watch, only you can edit
+          </template>
+        </p>
+      </div>
+    </div>
+
     <!-- Players -->
     <div>
       <label class="section-label block mb-3">players</label>
@@ -105,6 +151,9 @@ async function submit() {
       <button @click="addPlayer" class="btn-ghost text-xs mt-2" style="color: var(--green-dim)">
         + add player
       </button>
+      <p v-if="accessMode === 'collaborative'" class="text-[10px] mt-2" style="color: var(--text-dim)">
+        players can also join via share link after creating the game
+      </p>
     </div>
 
     <!-- Submit -->

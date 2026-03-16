@@ -6,6 +6,9 @@ export const games = sqliteTable('games', {
   name: text('name').notNull(),
   mode: text('mode').notNull().default('generic'),
   status: text('status').notNull().default('active'),
+  share_code: text('share_code').unique().notNull(),
+  access_mode: text('access_mode').notNull().default('solo'),
+  owner_token: text('owner_token').notNull(),
   created_at: text('created_at').notNull().default(sql`(datetime('now'))`),
   finished_at: text('finished_at'),
 })

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useGame, useUpdateGame, useDeleteGame, useDeleteRound } from '../composables/useApi'
+import { useRoute } from 'vue-router'
+import { useGameByCode, useUpdateGame, useDeleteRound } from '../composables/useApi'
 import { getMode } from '../lib/modes'
+import { isGameOwner } from '../lib/ownership'
 import ScoreGrid from '../components/ScoreGrid.vue'
 import AddRoundModal from '../components/AddRoundModal.vue'
 import EditScoreModal from '../components/EditScoreModal.vue'
@@ -11,35 +12,23 @@ import ModeIcon from '../components/ModeIcon.vue'
 import SharePanel from '../components/SharePanel.vue'
 
 const route = useRoute()
-const router = useRouter()
-const gameId = computed(() => Number(route.params.id))
-const { data: game, isLoading } = useGame(gameId)
-const updateGame = useUpdateGame()
-const deleteGame = useDeleteGame()
-const deleteRound = useDeleteRound()
+const code = computed(() => route.params.code as string)
+
+const { data: game, isLoading } = useGameByCode(code, { refetchInterval: 3000 })
 
 const showAddRound = ref(false)
-const showConfirmDelete = ref(false)
 const showAddPlayer = ref(false)
 const editTarget = ref<{ roundId: number; roundNumber: number; playerId: number; playerName: string; currentPoints: number } | null>(null)
 
+const deleteRound = useDeleteRound()
+
 const mode = computed(() => game.value ? getMode(game.value.mode) : null)
-
-async function finishGame() {
-  if (!game.value) return
-  await updateGame.mutateAsync({ id: game.value.id, status: 'finished' })
-}
-
-async function reactivateGame() {
-  if (!game.value) return
-  await updateGame.mutateAsync({ id: game.value.id, status: 'active' })
-}
-
-async function handleDelete() {
-  if (!game.value) return
-  await deleteGame.mutateAsync(game.value.id)
-  router.push('/')
-}
+const owner = computed(() => game.value ? isGameOwner(game.value.id) : false)
+const canEdit = computed(() => {
+  if (!game.value) return false
+  if (owner.value) return true
+  return game.value.access_mode === 'collaborative'
+})
 
 async function undoLastRound() {
   if (!game.value?.rounds.length) return
@@ -60,14 +49,10 @@ async function undoLastRound() {
   <!-- Not found -->
   <div v-else-if="!game" class="card-static text-center py-16">
     <p style="color: var(--text-dim)">game not found</p>
+    <p class="text-xs mt-2" style="color: var(--text-dim)">check the link and try again</p>
   </div>
 
   <div v-else class="space-y-4">
-    <!-- Back link -->
-    <button @click="router.push('/')" class="btn-ghost !px-0 text-xs" style="color: var(--text-dim)">
-      ← back to games
-    </button>
-
     <!-- Header -->
     <div class="card-static p-4">
       <div class="flex items-start justify-between">
@@ -87,27 +72,26 @@ async function undoLastRound() {
           <span :class="['badge', game.status === 'active' ? 'badge-active' : 'badge-finished']">
             {{ game.status === 'active' ? 'live' : 'done' }}
           </span>
-          <span v-if="game.access_mode !== 'solo'" class="badge badge-mode !text-[8px]">
-            {{ game.access_mode }}
-          </span>
+          <span v-if="!canEdit" class="badge badge-finished !text-[8px]">spectating</span>
+          <span v-else-if="!owner" class="badge badge-active !text-[8px]">collaborative</span>
         </div>
       </div>
     </div>
 
-    <!-- Share Panel -->
+    <!-- Share Panel (owner only) -->
     <SharePanel
-      v-if="game.access_mode !== 'solo'"
+      v-if="owner && game.access_mode !== 'solo'"
       :share-code="game.share_code"
       :access-mode="game.access_mode"
     />
 
     <!-- Score Grid -->
     <div class="card-static overflow-hidden">
-      <ScoreGrid :game="game" :mode="mode!" :editable="game.status === 'active'" @editScore="editTarget = $event" />
+      <ScoreGrid :game="game" :mode="mode!" :editable="canEdit && game.status === 'active'" @editScore="editTarget = $event" />
     </div>
 
-    <!-- Actions -->
-    <div v-if="game.status === 'active'" class="flex gap-2">
+    <!-- Actions (only if can edit and game is active) -->
+    <div v-if="canEdit && game.status === 'active'" class="flex gap-2">
       <button @click="showAddRound = true" class="btn-primary flex-1">
         + add round
       </button>
@@ -125,34 +109,9 @@ async function undoLastRound() {
       </button>
     </div>
 
-    <!-- Game controls -->
-    <div class="flex gap-2">
-      <button
-        v-if="game.status === 'active'"
-        @click="finishGame"
-        class="btn-secondary flex-1"
-      >
-        finish game
-      </button>
-      <button
-        v-else
-        @click="reactivateGame"
-        class="btn-secondary flex-1"
-      >
-        reactivate
-      </button>
-      <button @click="showConfirmDelete = true" class="btn-danger">
-        delete
-      </button>
-    </div>
-
-    <!-- Delete confirmation -->
-    <div v-if="showConfirmDelete" class="card-static p-4 space-y-3" style="border-color: rgba(255,68,68,0.3)">
-      <p class="text-xs" style="color: var(--text-dim)">delete this game and all scores? this can't be undone.</p>
-      <div class="flex gap-2">
-        <button @click="handleDelete" class="btn-danger">yes, delete</button>
-        <button @click="showConfirmDelete = false" class="btn-secondary">cancel</button>
-      </div>
+    <!-- Auto-refresh indicator for non-owners -->
+    <div v-if="!owner" class="text-center">
+      <span class="text-[10px]" style="color: var(--text-dim)">auto-refreshing every 3s</span>
     </div>
 
     <!-- Add Round Modal -->

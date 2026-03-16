@@ -17,6 +17,9 @@ sqlite.exec(`
     name TEXT NOT NULL,
     mode TEXT NOT NULL DEFAULT 'generic',
     status TEXT NOT NULL DEFAULT 'active',
+    share_code TEXT UNIQUE NOT NULL,
+    access_mode TEXT NOT NULL DEFAULT 'solo',
+    owner_token TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     finished_at TEXT
   );
@@ -42,7 +45,40 @@ sqlite.exec(`
   CREATE INDEX IF NOT EXISTS idx_rounds_game ON rounds(game_id);
   CREATE INDEX IF NOT EXISTS idx_scores_round ON scores(round_id);
   CREATE INDEX IF NOT EXISTS idx_scores_player ON scores(player_id);
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_games_share_code ON games(share_code);
 `)
+
+// Migration: add new columns to existing databases
+function migrateShareColumns() {
+  const crypto = require('node:crypto')
+  const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+  function randomId(size: number): string {
+    const bytes = crypto.randomBytes(size)
+    return Array.from(bytes as Buffer, (b: number) => alphabet[b % alphabet.length]).join('')
+  }
+
+  const cols = sqlite.prepare("PRAGMA table_info(games)").all() as { name: string }[]
+  const colNames = cols.map(c => c.name)
+
+  if (!colNames.includes('share_code')) {
+    sqlite.exec("ALTER TABLE games ADD COLUMN share_code TEXT DEFAULT '' NOT NULL")
+    sqlite.exec("ALTER TABLE games ADD COLUMN access_mode TEXT DEFAULT 'solo' NOT NULL")
+    sqlite.exec("ALTER TABLE games ADD COLUMN owner_token TEXT DEFAULT '' NOT NULL")
+
+    // Backfill existing games with generated codes/tokens
+    const existing = sqlite.prepare("SELECT id FROM games").all() as { id: number }[]
+    const update = sqlite.prepare("UPDATE games SET share_code = ?, owner_token = ? WHERE id = ?")
+    for (const row of existing) {
+      update.run(randomId(6), randomId(32), row.id)
+    }
+
+    try { sqlite.exec("CREATE UNIQUE INDEX idx_games_share_code ON games(share_code)") } catch {}
+  }
+}
+
+try { migrateShareColumns() } catch (e) {
+  console.error('Migration error (may be safe to ignore on fresh DB):', e)
+}
 
 export const db = drizzle(sqlite, { schema })
 export { sqlite }
