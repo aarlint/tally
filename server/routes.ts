@@ -44,10 +44,10 @@ api.post('/games', async (c) => {
   if (!body.name?.trim()) return c.json({ error: 'Game name required' }, 400)
   if (!body.players?.length || body.players.length < 2) return c.json({ error: 'At least 2 players required' }, 400)
 
-  const [game] = db.insert(games).values({
+  const game = db.insert(games).values({
     name: body.name.trim(),
     mode: body.mode || 'generic',
-  }).returning()
+  }).returning().get()
 
   const playerRows = body.players.map((name, i) => ({
     game_id: game.id,
@@ -130,7 +130,7 @@ api.patch('/games/:id', async (c) => {
   }
   if (body.name) updates.name = body.name.trim()
 
-  const [updated] = db.update(games).set(updates).where(eq(games.id, id)).returning()
+  const updated = db.update(games).set(updates).where(eq(games.id, id)).returning().get()
   if (!updated) return c.json({ error: 'Game not found' }, 404)
 
   return c.json(updated)
@@ -163,10 +163,10 @@ api.post('/games/:id/rounds', async (c) => {
 
   const roundNumber = (lastRound?.round_number ?? 0) + 1
 
-  const [round] = db.insert(rounds).values({
+  const round = db.insert(rounds).values({
     game_id: gameId,
     round_number: roundNumber,
-  }).returning()
+  }).returning().get()
 
   if (body.scores?.length) {
     const scoreRows = body.scores.map((s) => ({
