@@ -26,7 +26,7 @@ async function submit() {
 
 <template>
   <div class="overlay flex items-end sm:items-center justify-center" @click.self="emit('close')">
-    <div class="w-full max-w-lg card-static rounded-t-md sm:rounded-md p-5 space-y-4" style="background: var(--surface); border-color: var(--border)">
+    <div class="sheet w-full max-w-lg card-static rounded-t-md sm:rounded-md p-5 space-y-4" style="background: var(--surface); border-color: var(--border)">
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div>

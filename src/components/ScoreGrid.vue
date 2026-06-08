@@ -23,7 +23,7 @@ const leader = computed(() => {
 </script>
 
 <template>
-  <div class="overflow-x-auto">
+  <div class="score-scroll">
     <table class="score-table">
       <thead>
         <tr>
@@ -47,7 +47,7 @@ const leader = computed(() => {
           <td
             v-for="score in round.scores"
             :key="score.player_id"
-            :class="{ 'cursor-pointer hover:bg-[var(--border)]': editable }"
+            :class="{ 'cell-edit': editable }"
             @click="editable && emit('editScore', {
               roundId: round.id,
               roundNumber: round.round_number,

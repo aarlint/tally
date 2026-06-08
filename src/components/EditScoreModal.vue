@@ -15,6 +15,10 @@ const emit = defineEmits<{ close: [] }>()
 const updateRound = useUpdateRound()
 const points = ref(props.currentPoints)
 
+function bump(delta: number) {
+  points.value = (Number(points.value) || 0) + delta
+}
+
 async function submit() {
   await updateRound.mutateAsync({
     gameId: props.gameId,
@@ -27,7 +31,7 @@ async function submit() {
 
 <template>
   <div class="overlay flex items-end sm:items-center justify-center" @click.self="emit('close')">
-    <div class="w-full max-w-lg card-static rounded-t-md sm:rounded-md p-5 space-y-4" style="background: var(--surface); border-color: var(--border)">
+    <div class="sheet w-full max-w-lg card-static rounded-t-md sm:rounded-md p-5 space-y-4" style="background: var(--surface); border-color: var(--border)">
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
@@ -46,17 +50,18 @@ async function submit() {
       </div>
 
       <!-- Score input -->
-      <div class="flex items-center gap-3">
-        <span class="text-xs w-6 text-center" style="color: var(--green-dim)">{{ playerName.charAt(0).toUpperCase() }}</span>
-        <label class="text-xs flex-1 truncate" style="color: var(--text-dim)">{{ playerName }}</label>
+      <div class="flex items-center gap-2">
+        <label class="text-sm flex-1 truncate" style="color: var(--text)">{{ playerName }}</label>
+        <button type="button" class="step-btn" @click="bump(-1)" aria-label="decrease">−</button>
         <input
           v-model.number="points"
           type="number"
           inputmode="numeric"
-          class="input-score w-24"
+          class="input-score !w-20 !py-2 !px-1"
           @focus="($event.target as HTMLInputElement).select()"
           autofocus
         />
+        <button type="button" class="step-btn" @click="bump(1)" aria-label="increase">+</button>
       </div>
 
       <!-- Submit -->

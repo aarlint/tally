@@ -16,6 +16,10 @@ const scoreInputs = ref<Record<number, number>>(
   Object.fromEntries(props.game.players.map(p => [p.id, 0]))
 )
 
+function bump(playerId: number, delta: number) {
+  scoreInputs.value[playerId] = (Number(scoreInputs.value[playerId]) || 0) + delta
+}
+
 async function submit() {
   const scores = props.game.players.map(p => ({
     player_id: p.id,
@@ -29,7 +33,7 @@ async function submit() {
 
 <template>
   <div class="overlay flex items-end sm:items-center justify-center" @click.self="emit('close')">
-    <div class="w-full max-w-lg card-static rounded-t-md sm:rounded-md p-5 space-y-4" style="background: var(--surface); border-color: var(--border)">
+    <div class="sheet w-full max-w-lg card-static rounded-t-md sm:rounded-md p-5 space-y-4" style="background: var(--surface); border-color: var(--border)">
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
@@ -48,16 +52,18 @@ async function submit() {
       </div>
 
       <!-- Score inputs -->
-      <div class="space-y-3">
-        <div v-for="player in game.players" :key="player.id" class="flex items-center gap-3">
-          <label class="text-xs flex-1" style="color: var(--text)">{{ player.name }}</label>
+      <div class="space-y-2.5">
+        <div v-for="player in game.players" :key="player.id" class="flex items-center gap-2">
+          <label class="text-sm flex-1 truncate" style="color: var(--text)">{{ player.name }}</label>
+          <button type="button" class="step-btn" @click="bump(player.id, -1)" :aria-label="`decrease ${player.name}`">−</button>
           <input
             v-model.number="scoreInputs[player.id]"
             type="number"
             inputmode="numeric"
-            class="input-score w-16 !text-sm !py-1.5 !px-2"
+            class="input-score !w-16 !py-2 !px-1"
             @focus="($event.target as HTMLInputElement).select()"
           />
+          <button type="button" class="step-btn" @click="bump(player.id, 1)" :aria-label="`increase ${player.name}`">+</button>
         </div>
       </div>
 
